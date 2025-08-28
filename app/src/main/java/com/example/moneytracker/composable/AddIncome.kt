@@ -31,11 +31,10 @@ fun AddIncome(
     var selectedOption by remember { mutableStateOf("Income") }
 
 
-
-
     Column(
-        modifier = Modifier.padding(20.dp)
-            .background(Color.White)
+        modifier = Modifier
+            .padding(20.dp)
+
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -45,6 +44,7 @@ fun AddIncome(
             Text(
                 "Add Income",
                 fontSize = 28.sp,
+                color = Color(0xFF0F172A),
                 fontWeight = FontWeight.ExtraBold,
                 modifier = Modifier.weight(1f)
             )
@@ -59,6 +59,7 @@ fun AddIncome(
 
         Text(
             text = "Amount",
+            color = Color.Black,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.SemiBold
         )
@@ -67,22 +68,22 @@ fun AddIncome(
             colors = TextFieldDefaults.colors().copy(
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White
+                focusedTextColor = Color(0xFF0F172A),
+                unfocusedTextColor = Color(0xFF0F172A)
             ),
             value = amount,
             onValueChange = { amount = it },
-            label = { Text("$0.0") },
+            placeholder = { Text("$0.0", color = Color.Black.copy(alpha = 0.5f)) },
             modifier = Modifier
                 .fillMaxWidth()
         )
 
         Spacer(Modifier.height(16.dp))
 
-        Text("Category", fontWeight = FontWeight.SemiBold)
-        Spacer(Modifier.height(8.dp))
+
         Text(
             text = "Category",
+            color = Color.Black,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.SemiBold
         )
@@ -116,7 +117,12 @@ fun AddIncome(
 
         Spacer(Modifier.height(16.dp))
 
-        Text("Date", fontWeight = FontWeight.SemiBold)
+        Text(
+            "Date",
+            style = MaterialTheme.typography.headlineMedium,
+            color = Color.Black,
+            fontWeight = FontWeight.SemiBold
+        )
         Spacer(Modifier.height(6.dp))
         OutlinedTextField(
             value = date,
@@ -130,7 +136,11 @@ fun AddIncome(
 
         Spacer(Modifier.height(16.dp))
 
-        Text("Notes (optional)", fontWeight = FontWeight.SemiBold)
+        Text(
+            "Notes (optional)",
+
+            style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold
+        )
         Spacer(Modifier.height(6.dp))
         OutlinedTextField(
             value = notes,

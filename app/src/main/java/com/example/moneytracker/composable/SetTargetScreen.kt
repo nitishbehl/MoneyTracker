@@ -30,11 +30,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.moneytracker.viewModel.MainViewModel
 
 @Composable
 fun SetTargetScreen(
+    viewModel: MainViewModel = viewModel(),
     onSkip: () -> Unit = {},
-    onSave: () -> Unit = {}
+    onSave: () -> Unit = {},
 ) {
     var monthlyTarget by remember { mutableStateOf("") }
     var dailyTarget by remember { mutableStateOf("") }
@@ -63,11 +66,12 @@ fun SetTargetScreen(
         Text(
             text = "Enter your monthly and daily targets to start tracking.",
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f)
+            color = Color.Black,
         )
         Spacer(Modifier.height(18.dp))
         Text(
             text = "Monthly Target",
+            color = Color.Black,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.SemiBold
         )
@@ -81,7 +85,7 @@ fun SetTargetScreen(
             ),
             value = monthlyTarget,
             onValueChange = { monthlyTarget = it },
-            label = { Text("Enter Monthly Target") },
+            label = { Text("Enter Monthly Target", color = Color.Black.copy(alpha = 0.5f)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .focusRequester(focusRequester)
@@ -89,6 +93,7 @@ fun SetTargetScreen(
         Spacer(Modifier.height(18.dp))
         Text(
             text = "Daily Target",
+            color = Color.Black,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.SemiBold
         )
@@ -102,7 +107,7 @@ fun SetTargetScreen(
             ),
             value = dailyTarget,
             onValueChange = { dailyTarget = it },
-            label = { Text("Enter Daily Target") },
+            label = { Text("Enter Daily Target", color = Color.Black.copy(alpha = 0.5f)) },
             modifier = Modifier
                 .fillMaxWidth()
         )
@@ -120,6 +125,10 @@ fun SetTargetScreen(
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.clickable(
                     onClick = {
+                        viewModel.saveTarget(
+                            monthlyTarget.toDouble(),
+                            dailyTarget.toDouble()
+                        )
                         onSave()
                     }
                 )
@@ -128,6 +137,7 @@ fun SetTargetScreen(
         Spacer(Modifier.height(8.dp))
         Text(
             "Skip for Now",
+            color = Color.Black.copy(alpha = 0.5f),
             style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier
