@@ -35,35 +35,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+
 @Composable
-fun AddExpense() {
+fun AddExpense(
+    selectedOption: EntryType,
+    onOptionSelected: (EntryType) -> Unit,
+) {
     var amount by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
     val categories = listOf("Salary", "Freelance", "Bonus", "Interest", "Refund", "Other")
-    var selectedOption by remember { mutableStateOf("Expense") }
-
-
 
 
     Column(
-        modifier = Modifier.padding(20.dp)
+        modifier = Modifier
+            .padding(20.dp)
             .background(Color.White)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                "Add Expense",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.ExtraBold,
-                modifier = Modifier.weight(1f)
-            )
-        }
-
-        Spacer(Modifier.height(18.dp))
-
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
@@ -77,10 +65,15 @@ fun AddExpense() {
             )
             ExpenseIncomeToggle(
                 selectedOption = selectedOption,
-                onOptionSelected = { selectedOption = it }
+                onOptionSelected = onOptionSelected
             )
-
+            Spacer(Modifier.height(18.dp))
         }
+        Text(
+            text = "Amount",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.SemiBold
+        )
         Spacer(Modifier.height(4.dp))
         OutlinedTextField(
             colors = TextFieldDefaults.colors().copy(
@@ -98,8 +91,6 @@ fun AddExpense() {
 
         Spacer(Modifier.height(16.dp))
 
-        Text("Category", fontWeight = FontWeight.SemiBold)
-        Spacer(Modifier.height(8.dp))
         Text(
             text = "Category",
             style = MaterialTheme.typography.headlineMedium,
@@ -162,7 +153,7 @@ fun AddExpense() {
         Spacer(Modifier.height(22.dp))
 
         IconButton(
-            onClick = {  },
+            onClick = { },
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0xFF90CAF9), shape = MaterialTheme.shapes.medium),
@@ -191,5 +182,8 @@ fun AddExpense() {
 @Composable
 @Preview(showBackground = true)
 fun AddExpensePreview() {
-    AddExpense()
+    AddExpense(
+        selectedOption = EntryType.Expense,
+        onOptionSelected = {}
+    )
 }

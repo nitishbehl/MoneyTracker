@@ -30,14 +30,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.moneytracker.viewModel.MainViewModel
 
 @Composable
 fun SetTargetScreen(
-    viewModel: MainViewModel = viewModel(),
-    onSkip: () -> Unit = {},
-    onSave: () -> Unit = {},
+    onSkip: () -> Unit,
+    onSave: (Double, Double) -> Unit,
 ) {
     var monthlyTarget by remember { mutableStateOf("") }
     var dailyTarget by remember { mutableStateOf("") }
@@ -55,11 +52,11 @@ fun SetTargetScreen(
     ) {
 
         Text(
-            text = "Set Your Target", modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = "Set Your Target",
+            modifier = Modifier.align(Alignment.CenterHorizontally),
             fontSize = 28.sp,
             style = MaterialTheme.typography.headlineLarge.copy(
-                fontWeight = FontWeight.ExtraBold,
-                color = Color.Black
+                fontWeight = FontWeight.ExtraBold, color = Color.Black
             )
         )
         Spacer(Modifier.height(6.dp))
@@ -78,11 +75,11 @@ fun SetTargetScreen(
         Spacer(Modifier.height(10.dp))
         OutlinedTextField(
             colors = TextFieldDefaults.colors().copy(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
-            ),
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black
+        ),
             value = monthlyTarget,
             onValueChange = { monthlyTarget = it },
             label = { Text("Enter Monthly Target", color = Color.Black.copy(alpha = 0.5f)) },
@@ -100,16 +97,15 @@ fun SetTargetScreen(
         Spacer(Modifier.height(10.dp))
         OutlinedTextField(
             colors = TextFieldDefaults.colors().copy(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black
-            ),
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black
+        ),
             value = dailyTarget,
             onValueChange = { dailyTarget = it },
             label = { Text("Enter Daily Target", color = Color.Black.copy(alpha = 0.5f)) },
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.weight(1f))
         IconButton(
@@ -125,13 +121,10 @@ fun SetTargetScreen(
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.clickable(
                     onClick = {
-                        viewModel.saveTarget(
-                            monthlyTarget.toDouble(),
-                            dailyTarget.toDouble()
+                        onSave(
+                            monthlyTarget.toDouble(), dailyTarget.toDouble()
                         )
-                        onSave()
-                    }
-                )
+                    })
             )
         }
         Spacer(Modifier.height(8.dp))
@@ -145,8 +138,7 @@ fun SetTargetScreen(
                 .clickable(
                     onClick = {
                         onSkip()
-                    }
-                )
+                    })
         )
     }
 }
@@ -154,5 +146,9 @@ fun SetTargetScreen(
 @Composable
 @Preview(showBackground = true)
 fun SetTargetScreenPreview() {
-    SetTargetScreen()
+    SetTargetScreen(onSkip = {
+        // Handle skip button click
+    }, onSave = { d: Double, d1: Double ->
+        // Handle save button click
+    })
 }

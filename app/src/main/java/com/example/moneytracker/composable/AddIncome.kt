@@ -20,20 +20,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+enum class EntryType { Expense, Income }
 
 @Composable
 fun AddIncome(
+    selectedOption: EntryType,
+    onOptionSelected: (EntryType) -> Unit,
+    saveIncome: (Int, String, String) -> Unit
 ) {
     var amount by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
     val categories = listOf("Salary", "Freelance", "Bonus", "Interest", "Refund", "Other")
-    var selectedOption by remember { mutableStateOf("Income") }
-
 
     Column(
-        modifier = Modifier
-            .padding(20.dp)
+        modifier = Modifier.padding(20.dp)
 
     ) {
         Row(
@@ -49,13 +50,9 @@ fun AddIncome(
                 modifier = Modifier.weight(1f)
             )
             ExpenseIncomeToggle(
-                selectedOption = selectedOption,
-                onOptionSelected = { selectedOption = it }
+                selectedOption = selectedOption, onOptionSelected = onOptionSelected
             )
-
         }
-
-        Spacer(Modifier.height(18.dp))
 
         Text(
             text = "Amount",
@@ -74,8 +71,7 @@ fun AddIncome(
             value = amount,
             onValueChange = { amount = it },
             placeholder = { Text("$0.0", color = Color.Black.copy(alpha = 0.5f)) },
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(Modifier.height(16.dp))
@@ -89,17 +85,14 @@ fun AddIncome(
         )
         Spacer(Modifier.height(10.dp))
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.fillMaxWidth()
+            horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()
         ) {
             items(categories.size) { index ->
                 Box(
                     modifier = Modifier
                         .clip(MaterialTheme.shapes.large)
                         .border(
-                            width = 1.dp,
-                            color = Color.Gray,
-                            shape = MaterialTheme.shapes.large
+                            width = 1.dp, color = Color.Gray, shape = MaterialTheme.shapes.large
                         )
                         .padding(horizontal = 12.dp, vertical = 8.dp)
 
@@ -130,8 +123,7 @@ fun AddIncome(
             placeholder = { Text("YYYY-MM-DD") },
             leadingIcon = { Icon(Icons.Default.CalendarMonth, null) },
             shape = RoundedCornerShape(14.dp),
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(Modifier.height(16.dp))
@@ -153,7 +145,9 @@ fun AddIncome(
         Spacer(Modifier.height(22.dp))
 
         IconButton(
-            onClick = { },
+            onClick = {
+                saveIncome(amount.toInt(), date, notes)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0xFF90CAF9), shape = MaterialTheme.shapes.medium),
@@ -172,16 +166,17 @@ fun AddIncome(
             "Clear",
             color = Color(0xFF6B7280),
             textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
 
         )
     }
 }
 
 @Composable
-fun ExpenseIncomeToggle(selectedOption: String, onOptionSelected: (String) -> Unit) {
-    val options = listOf("Expense", "Income")
+fun ExpenseIncomeToggle(
+    selectedOption: EntryType, onOptionSelected: (EntryType) -> Unit
+) {
+    val options = listOf(EntryType.Expense, EntryType.Income)
 
     Row(
         modifier = Modifier
@@ -196,12 +191,11 @@ fun ExpenseIncomeToggle(selectedOption: String, onOptionSelected: (String) -> Un
                     .clip(RoundedCornerShape(50))
                     .background(if (isSelected) Color.White else Color.Transparent)
                     .clickable { onOptionSelected(option) }
-                    .padding(horizontal = 16.dp, vertical = 6.dp)
-            ) {
+                    .padding(horizontal = 16.dp, vertical = 6.dp)) {
                 Text(
-                    text = option,
+                    text = option.name,
                     color = if (isSelected) Color.Black else Color.Gray,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                 )
             }
         }
@@ -212,5 +206,9 @@ fun ExpenseIncomeToggle(selectedOption: String, onOptionSelected: (String) -> Un
 @Preview(showBackground = true)
 @Composable
 fun AddIncomePreview() {
-    AddIncome()
+    AddIncome(
+        selectedOption = EntryType.Expense,
+        onOptionSelected = {},
+        saveIncome = { _, _, _ -> }
+    )
 }

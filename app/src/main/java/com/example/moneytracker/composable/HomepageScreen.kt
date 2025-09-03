@@ -18,36 +18,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.moneytracker.viewModel.MainViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePageScreen(
-    viewModel: MainViewModel
-
+    monthly: Double, daily: Double,
+    onAddClick: () -> Unit = {}
 ) {
-    val sheetState = rememberModalBottomSheetState()
-    var showBottomSheet by remember { mutableStateOf(false) }
+
     val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
     var selectedDay by remember { mutableStateOf("Mon") }
-    val monthly = viewModel.monthlyTargetState.value.toDoubleOrNull() ?: 0.0
-    val daily = viewModel.dailyTargetState.value.toDoubleOrNull() ?: 0.0
     val money: (Double) -> String = { String.format("%.2f", it) }
 
 
     Scaffold(
-        containerColor = Color(0xFFF7F8FB),
-        floatingActionButton = {
+        containerColor = Color(0xFFF7F8FB), floatingActionButton = {
             ExtendedFloatingActionButton(
                 text = { Text("Add Task") },
                 icon = { Icon(Icons.Filled.Add, contentDescription = null) },
-                onClick = { showBottomSheet = true }
-            )
-        }
-    ) { innerPadding ->
+                onClick = {onAddClick()})
+        }) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -62,8 +57,7 @@ fun HomePageScreen(
                     .wrapContentWidth(Alignment.CenterHorizontally)
                     .padding(top = 8.dp),
                 style = MaterialTheme.typography.headlineLarge.copy(
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFF0F172A)
+                    fontWeight = FontWeight.ExtraBold, color = Color(0xFF0F172A)
                 )
             )
 
@@ -79,8 +73,7 @@ fun HomePageScreen(
                         money(monthly),
                         "Left ${money(monthly)}",
                         Icons.Filled.CalendarMonth
-                    ),
-                    CardData(
+                    ), CardData(
                         "Daily Target",
                         money(daily),
                         "Left ${money(daily)}",
@@ -89,9 +82,7 @@ fun HomePageScreen(
                 )
                 targets.forEach { item ->
                     CardUi(
-                        data = item,
-                        modifier = Modifier
-                            .weight(1f)
+                        data = item, modifier = Modifier.weight(1f)
                     )
                 }
             }
@@ -108,9 +99,7 @@ fun HomePageScreen(
                 )
                 totalMoney.forEach { item ->
                     TotalMoneyUi(
-                        data = item,
-                        modifier = Modifier
-                            .weight(1f)
+                        data = item, modifier = Modifier.weight(1f)
                     )
                 }
             }
@@ -130,8 +119,7 @@ fun HomePageScreen(
                             .background(if (isSelected) Color(0xFF5B47FF) else Color(0xFFF3F5F9))
                             .clickable { selectedDay = day }
                             .padding(vertical = 10.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
+                        contentAlignment = Alignment.Center) {
                         Text(
                             text = day,
                             color = if (isSelected) Color.White else Color(0xFF334155),
@@ -155,10 +143,7 @@ fun HomePageScreen(
             Spacer(Modifier.height(12.dp))
 
             CardScreen(
-                title = "Salary",
-                dateLabel = "Aug 18, 2025",
-                amount = "$1,000.00",
-                isIncome = true
+                title = "Salary", dateLabel = "Aug 18, 2025", amount = "$1,000.00", isIncome = true
             )
             Spacer(Modifier.height(12.dp))
 
@@ -184,22 +169,11 @@ fun HomePageScreen(
             Spacer(Modifier.height(80.dp))
         }
     }
-
-    if (showBottomSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showBottomSheet = false },
-            sheetState = sheetState,
-            containerColor = Color.White,
-        ) {
-            Surface(
-                color = Color.White,
-                contentColor = Color(0xFF0F172A)
-            ) {
-                AddExpense()
-            }
-
-        }
-    }
 }
 
 
+@Preview
+@Composable
+fun HomePageScreenPreview() {
+    HomePageScreen(1000.0, 500.0)
+}
