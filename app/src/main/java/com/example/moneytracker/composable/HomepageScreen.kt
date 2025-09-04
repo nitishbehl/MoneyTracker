@@ -38,6 +38,8 @@ fun HomePageScreen(
     val money: (Double) -> String = { String.format("%.2f", it) }
     val incomeList = entries.filter { it.type == EntryType.Income }
     val expenseList = entries.filter { it.type == EntryType.Expense }
+    val totalIncome = incomeList.sumOf { it.amount }
+    val totalExpense = expenseList.sumOf { it.amount }
 
     Scaffold(
         containerColor = Color(0xFFF7F8FB), floatingActionButton = {
@@ -97,8 +99,8 @@ fun HomePageScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 val totalMoney = listOf(
-                    TotalMoney("Total Income", "$00.00", Icons.AutoMirrored.Filled.EventNote),
-                    TotalMoney("Total Expense", "$00.00", Icons.AutoMirrored.Filled.EventNote)
+                    TotalMoney("Total Income", "$${money(totalIncome)}", Icons.AutoMirrored.Filled.EventNote),
+                    TotalMoney("Total Expense", "$${money(totalExpense)}", Icons.AutoMirrored.Filled.EventNote)
                 )
                 totalMoney.forEach { item ->
                     TotalMoneyUi(
