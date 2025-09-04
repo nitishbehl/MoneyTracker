@@ -21,7 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.moneytracker.db.IncomeEntity
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -99,8 +98,16 @@ fun HomePageScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 val totalMoney = listOf(
-                    TotalMoney("Total Income", "$${money(totalIncome)}", Icons.AutoMirrored.Filled.EventNote),
-                    TotalMoney("Total Expense", "$${money(totalExpense)}", Icons.AutoMirrored.Filled.EventNote)
+                    TotalMoney(
+                        "Total Income",
+                        "$${money(totalIncome)}",
+                        Icons.AutoMirrored.Filled.EventNote
+                    ),
+                    TotalMoney(
+                        "Total Expense",
+                        "$${money(totalExpense)}",
+                        Icons.AutoMirrored.Filled.EventNote
+                    )
                 )
                 totalMoney.forEach { item ->
                     TotalMoneyUi(
