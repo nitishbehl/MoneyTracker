@@ -27,7 +27,6 @@ import com.example.moneytracker.composable.HomePageScreen
 import com.example.moneytracker.composable.SetTargetScreen
 import com.example.moneytracker.composable.Task
 import com.example.moneytracker.db.AppDatabase
-import com.example.moneytracker.db.IncomeEntity
 import com.example.moneytracker.ui.theme.MoneyTrackerTheme
 import com.example.moneytracker.viewModel.MainViewModel
 

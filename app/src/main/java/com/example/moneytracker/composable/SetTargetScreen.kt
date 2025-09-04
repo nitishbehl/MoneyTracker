@@ -75,11 +75,11 @@ fun SetTargetScreen(
         Spacer(Modifier.height(10.dp))
         OutlinedTextField(
             colors = TextFieldDefaults.colors().copy(
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-            focusedTextColor = Color.Black,
-            unfocusedTextColor = Color.Black
-        ),
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+            ),
             value = monthlyTarget,
             onValueChange = { monthlyTarget = it },
             label = { Text("Enter Monthly Target", color = Color.Black.copy(alpha = 0.5f)) },
@@ -97,11 +97,11 @@ fun SetTargetScreen(
         Spacer(Modifier.height(10.dp))
         OutlinedTextField(
             colors = TextFieldDefaults.colors().copy(
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-            focusedTextColor = Color.Black,
-            unfocusedTextColor = Color.Black
-        ),
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+            ),
             value = dailyTarget,
             onValueChange = { dailyTarget = it },
             label = { Text("Enter Daily Target", color = Color.Black.copy(alpha = 0.5f)) },
@@ -147,8 +147,6 @@ fun SetTargetScreen(
 @Preview(showBackground = true)
 fun SetTargetScreenPreview() {
     SetTargetScreen(onSkip = {
-        // Handle skip button click
     }, onSave = { d: Double, d1: Double ->
-        // Handle save button click
     })
 }
