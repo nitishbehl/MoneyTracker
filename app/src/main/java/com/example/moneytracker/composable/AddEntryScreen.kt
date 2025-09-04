@@ -1,10 +1,9 @@
 package com.example.moneytracker.composable
 
+
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -19,23 +18,32 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.concurrent.timerTask
 
 enum class EntryType { Expense, Income }
+data class Task(
+    val title: String,
+    val amount: Double,
+    val date: String,
+    val notes: String,
+    val type: EntryType
+)
 
 @Composable
-fun AddIncome(
+fun AddEntryScreen(
     selectedOption: EntryType,
     onOptionSelected: (EntryType) -> Unit,
-    saveIncome: (Int, String, String) -> Unit
+    onSave: (Task) -> Unit
 ) {
     var amount by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
-    val categories = listOf("Salary", "Freelance", "Bonus", "Interest", "Refund", "Other")
+    var category by remember { mutableStateOf("") }
 
     Column(
-        modifier = Modifier.padding(20.dp)
-
+        modifier = Modifier
+            .padding(20.dp)
+            .background(Color.White)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -43,30 +51,33 @@ fun AddIncome(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                "Add Income",
+                text = if (selectedOption == EntryType.Income) "Add Income" else "Add Expense",
                 fontSize = 28.sp,
-                color = Color(0xFF0F172A),
                 fontWeight = FontWeight.ExtraBold,
                 modifier = Modifier.weight(1f)
             )
             ExpenseIncomeToggle(
-                selectedOption = selectedOption, onOptionSelected = onOptionSelected
+                selectedOption = selectedOption,
+                onOptionSelected = onOptionSelected
             )
         }
 
+        Spacer(Modifier.height(18.dp))
+
+
         Text(
-            text = "Amount",
-            color = Color.Black,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.SemiBold
+            "Amount",
+            modifier = Modifier.padding(bottom = 8.dp),
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp
         )
-        Spacer(Modifier.height(4.dp))
+
         OutlinedTextField(
             colors = TextFieldDefaults.colors().copy(
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
-                focusedTextColor = Color(0xFF0F172A),
-                unfocusedTextColor = Color(0xFF0F172A)
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
             ),
             value = amount,
             onValueChange = { amount = it },
@@ -74,79 +85,82 @@ fun AddIncome(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(8.dp))
 
 
         Text(
-            text = "Category",
-            color = Color.Black,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.SemiBold
+            "Category",
+            modifier = Modifier.padding(bottom = 8.dp),
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp,
         )
-        Spacer(Modifier.height(10.dp))
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()
-        ) {
-            items(categories.size) { index ->
-                Box(
-                    modifier = Modifier
-                        .clip(MaterialTheme.shapes.large)
-                        .border(
-                            width = 1.dp, color = Color.Gray, shape = MaterialTheme.shapes.large
-                        )
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
 
+        OutlinedTextField(
+            colors = TextFieldDefaults.colors().copy(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+            ),
+            value = category,
+            onValueChange = { category = it },
+            placeholder = { Text("Type or select category") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
-                ) {
-                    Text(
-                        text = categories[index],
-                        fontSize = 15.sp,
-                        color = Color.Black,
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
-            }
-        }
+        Spacer(Modifier.height(8.dp))
 
-        Spacer(Modifier.height(16.dp))
 
         Text(
             "Date",
-            style = MaterialTheme.typography.headlineMedium,
-            color = Color.Black,
-            fontWeight = FontWeight.SemiBold
+            modifier = Modifier.padding(bottom = 8.dp),
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp,
+            color = Color.Black
         )
-        Spacer(Modifier.height(6.dp))
         OutlinedTextField(
+            colors = TextFieldDefaults.colors().copy(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+            ),
             value = date,
             onValueChange = { date = it },
             placeholder = { Text("YYYY-MM-DD") },
             leadingIcon = { Icon(Icons.Default.CalendarMonth, null) },
-            shape = RoundedCornerShape(14.dp),
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(8.dp))
 
         Text(
             "Notes (optional)",
-
-            style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold
+            modifier = Modifier.padding(bottom = 8.dp),
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp
         )
-        Spacer(Modifier.height(6.dp))
         OutlinedTextField(
+            colors = TextFieldDefaults.colors().copy(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black
+            ),
             value = notes,
             onValueChange = { notes = it },
-            placeholder = { Text("e.g. Client invoice #1024") },
-            shape = RoundedCornerShape(14.dp),
+            placeholder = { Text("e.g. Uber ride") },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(Modifier.height(22.dp))
 
+
         IconButton(
             onClick = {
-                saveIncome(amount.toInt(), date, notes)
+                if (amount.isNotEmpty() && category.isNotEmpty()) {
+                    onSave(Task(category, amount.toDouble(), date, notes, selectedOption))
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -167,15 +181,12 @@ fun AddIncome(
             color = Color(0xFF6B7280),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
-
         )
     }
 }
 
 @Composable
-fun ExpenseIncomeToggle(
-    selectedOption: EntryType, onOptionSelected: (EntryType) -> Unit
-) {
+fun ExpenseIncomeToggle(selectedOption: EntryType, onOptionSelected: (EntryType) -> Unit) {
     val options = listOf(EntryType.Expense, EntryType.Income)
 
     Row(
@@ -191,7 +202,8 @@ fun ExpenseIncomeToggle(
                     .clip(RoundedCornerShape(50))
                     .background(if (isSelected) Color.White else Color.Transparent)
                     .clickable { onOptionSelected(option) }
-                    .padding(horizontal = 16.dp, vertical = 6.dp)) {
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
+            ) {
                 Text(
                     text = option.name,
                     color = if (isSelected) Color.Black else Color.Gray,
@@ -202,13 +214,16 @@ fun ExpenseIncomeToggle(
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-fun AddIncomePreview() {
-    AddIncome(
+fun AddEntryPreview() {
+    AddEntryScreen(
         selectedOption = EntryType.Expense,
         onOptionSelected = {},
-        saveIncome = { _, _, _ -> }
+        onSave = { task ->
+
+        }
     )
+
+
 }

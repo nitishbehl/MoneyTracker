@@ -3,8 +3,8 @@ package com.example.moneytracker.db
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "Expense")
-data class ExpenseEntity(
+@Entity(tableName = "Income")
+data class IncomeEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
     val amount: Double,

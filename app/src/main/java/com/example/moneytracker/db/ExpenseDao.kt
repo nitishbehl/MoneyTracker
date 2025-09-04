@@ -1,36 +1,36 @@
 package com.example.moneytracker.db
 
-
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 
 @Dao
 interface ExpenseDao {
+
     @Insert
     suspend fun insertExpense(expense: ExpenseEntity)
 
-    @Query("SELECT * FROM expenses")
+    @Query("SELECT * FROM Expense")
     suspend fun getAllExpenses(): List<ExpenseEntity>
 
-    @Query("SELECT * FROM expenses WHERE date = :date")
+    @Query("SELECT * FROM Expense WHERE date = :date")
     suspend fun getExpensesByDate(date: String): List<ExpenseEntity>
-    @Query("SELECT * FROM expenses WHERE category = :category")
+
+    @Query("SELECT * FROM Expense WHERE category = :category")
     suspend fun getExpensesByCategory(category: String): List<ExpenseEntity>
 
-    @Query("DELETE FROM expenses")
+    @Query("DELETE FROM Expense")
     suspend fun deleteAllExpenses()
 
-    @Query("DELETE FROM expenses WHERE id = :id")
+    @Query("DELETE FROM Expense WHERE id = :id")
     suspend fun deleteExpenseById(id: Int)
 
-    @Query("UPDATE expenses SET name = :name, amount = :amount, date = :date, category = :category WHERE id = :id")
+    @Query("UPDATE Expense SET name = :name, amount = :amount, date = :date, category = :category WHERE id = :id")
     suspend fun updateExpense(id: Int, name: String, amount: Double, date: String, category: String)
 
-    @Query("SELECT SUM(amount) FROM expenses WHERE category = :category")
+    @Query("SELECT SUM(amount) FROM Expense WHERE category = :category")
     suspend fun getTotalExpenseByCategory(category: String): Double
 
-    @Query("SELECT SUM(amount) FROM expenses")
+    @Query("SELECT SUM(amount) FROM Expense")
     suspend fun getTotalExpense(): Double
-
 }

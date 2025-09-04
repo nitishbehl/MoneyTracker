@@ -1,5 +1,6 @@
 package com.example.moneytracker.activity
 
+import android.R.attr.entries
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,14 +20,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.room.Room
-import com.example.moneytracker.composable.AddExpense
-import com.example.moneytracker.composable.AddIncome
+import com.example.moneytracker.composable.AddEntryScreen
 import com.example.moneytracker.composable.EntryType
 import com.example.moneytracker.composable.HomePageScreen
 import com.example.moneytracker.composable.SetTargetScreen
+import com.example.moneytracker.composable.Task
 import com.example.moneytracker.db.AppDatabase
+import com.example.moneytracker.db.IncomeEntity
 import com.example.moneytracker.ui.theme.MoneyTrackerTheme
 import com.example.moneytracker.viewModel.MainViewModel
 
@@ -45,18 +46,30 @@ class MainActivity : ComponentActivity() {
                 var showHome by remember { mutableStateOf(false) }
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
+                        var showHome by remember { mutableStateOf(false) }
+                        var entries by remember { mutableStateOf(listOf<Task>()) }
                         var showBottomSheet by remember { mutableStateOf(false) }
+
+                        var selectedEntryType by remember { mutableStateOf(EntryType.Expense) }
 
                         if (showHome) {
                             val monthly = viewModel.userFinancialState.value.monthlyTarget
                             val daily = viewModel.userFinancialState.value.dailyTarget
-                            HomePageScreen(monthly, daily) {
-                                showBottomSheet = true
-                            }
+
+                            HomePageScreen(
+                                monthly = monthly,
+                                entries = entries,
+                                daily = daily,
+                                onAddClick = { showBottomSheet = true }
+                            )
                             if (showBottomSheet) {
-                                BottomsSheetUI(){
-                                    showBottomSheet = false
-                                }
+                                BottomsSheetUI(
+                                    onAddTask = { task ->
+                                        entries = entries + task
+                                        showBottomSheet = false
+                                    },
+                                    hideBottomSheet = { showBottomSheet = false }
+                                )
                             }
                         } else {
                             SetTargetScreen(
@@ -74,7 +87,9 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun BottomsSheetUI(hideBottomSheet:()->Unit) {
+    fun BottomsSheetUI(
+        onAddTask: (Task) -> Unit,
+        hideBottomSheet: () -> Unit) {
         val sheetState = rememberModalBottomSheetState()
         var selectedEntryType by remember { mutableStateOf(EntryType.Expense) }
         ModalBottomSheet(
@@ -85,22 +100,14 @@ class MainActivity : ComponentActivity() {
             Surface(
                 color = Color.White, contentColor = Color(0xFF0F172A)
             ) {
-                when (selectedEntryType) {
-                    EntryType.Expense -> AddExpense(
-                        selectedOption = selectedEntryType, onOptionSelected = {
-                            selectedEntryType = it
-                        })
-
-                    EntryType.Income -> AddIncome(
-                        selectedOption = selectedEntryType,
-                        onOptionSelected = {
-                            selectedEntryType = it
-                        },
-                        saveIncome = { amount, date, notes ->
-                            hideBottomSheet()
-//                            addIncome(amount, date, notes)
-                        })
-                }
+                AddEntryScreen(
+                    selectedOption = selectedEntryType,
+                    onOptionSelected = { selectedEntryType = it },
+                    onSave = { task ->
+                       onAddTask(task)
+                        hideBottomSheet()
+                    }
+                )
             }
         }
     }

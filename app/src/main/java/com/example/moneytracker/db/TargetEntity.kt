@@ -1,12 +1,11 @@
 package com.example.moneytracker.db
 
-
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(tableName = "Target")
 data class TargetEntity(
-    @PrimaryKey val id: Int = 1,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val monthlyTarget: Double,
     val dailyTarget: Double
 )

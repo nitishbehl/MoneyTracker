@@ -21,27 +21,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.moneytracker.db.IncomeEntity
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePageScreen(
-    monthly: Double, daily: Double,
-    onAddClick: () -> Unit = {}
+    monthly: Double,
+    entries: List<Task>,
+    daily: Double,
+    onAddClick: () -> Unit = {},
 ) {
 
     val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
     var selectedDay by remember { mutableStateOf("Mon") }
     val money: (Double) -> String = { String.format("%.2f", it) }
-
+    val incomeList = entries.filter { it.type == EntryType.Income }
+    val expenseList = entries.filter { it.type == EntryType.Expense }
 
     Scaffold(
         containerColor = Color(0xFFF7F8FB), floatingActionButton = {
             ExtendedFloatingActionButton(
                 text = { Text("Add Task") },
                 icon = { Icon(Icons.Filled.Add, contentDescription = null) },
-                onClick = {onAddClick()})
+                onClick = { onAddClick() })
         }) { innerPadding ->
         Column(
             modifier = Modifier
@@ -137,17 +140,20 @@ fun HomePageScreen(
                 fontSize = 26.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = Color(0xFF0F172A)
-
-
             )
             Spacer(Modifier.height(12.dp))
-
-            CardScreen(
-                title = "Salary", dateLabel = "Aug 18, 2025", amount = "$1,000.00", isIncome = true
-            )
-            Spacer(Modifier.height(12.dp))
-
-            Spacer(Modifier.height(22.dp))
+            if (incomeList.isNotEmpty()) {
+                incomeList.forEach { income ->
+                    CardScreen(
+                        title = income.title,
+                        dateLabel = income.date,
+                        amount = income.amount.toString(),
+                        isIncome = true
+                    )
+                    Spacer(Modifier.height(12.dp))
+                }
+                Spacer(Modifier.height(12.dp))
+            }
 
             Text(
                 "Expense Details",
@@ -155,18 +161,19 @@ fun HomePageScreen(
                 fontWeight = FontWeight.ExtraBold,
                 color = Color(0xFF0F172A)
             )
-
-
             Spacer(Modifier.height(12.dp))
-
-            CardScreen(
-                title = "Groceries",
-                dateLabel = "Aug 18, 2025",
-                amount = "$120.50",
-                isIncome = false
-            )
-
-            Spacer(Modifier.height(80.dp))
+            if (expenseList.isNotEmpty()) {
+                expenseList.forEach { expense ->
+                    CardScreen(
+                        title = expense.title,
+                        dateLabel = expense.date,
+                        amount = expense.amount.toString(),
+                        isIncome = false
+                    )
+                    Spacer(Modifier.height(12.dp))
+                }
+                Spacer(Modifier.height(12.dp))
+            }
         }
     }
 }
@@ -175,5 +182,17 @@ fun HomePageScreen(
 @Preview
 @Composable
 fun HomePageScreenPreview() {
-    HomePageScreen(1000.0, 500.0)
+    val Entries = listOf(
+        Task("Salary", 2000.0, "2025-09-04", "Monthly salary", EntryType.Income),
+        Task("Freelance", 500.0, "2025-09-03", "Project payment", EntryType.Income),
+        Task("Food", 150.0, "2025-09-04", "Lunch", EntryType.Expense),
+        Task("Transport", 50.0, "2025-09-04", "Bus pass", EntryType.Expense)
+    )
+    HomePageScreen(
+        monthly = 3000.0,
+        daily = 100.0,
+        entries = Entries
+    )
+
+
 }

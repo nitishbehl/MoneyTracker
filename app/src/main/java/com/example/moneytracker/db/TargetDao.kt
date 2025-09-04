@@ -1,29 +1,22 @@
 package com.example.moneytracker.db
 
-
 import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.OnConflictStrategy
+import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import androidx.room.Insert
 
 @Dao
 interface TargetDao {
-    @Query("SELECT * FROM TargetEntity WHERE id = 1")
-    suspend fun getTarget(): TargetEntity?
+
+    @Insert
+    suspend fun insertTarget(target: TargetEntity)
 
     @Update
     suspend fun updateTarget(target: TargetEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTarget(target: TargetEntity)
+    @Query("SELECT * FROM Target WHERE id = :id")
+    suspend fun getTargetById(id: Int): TargetEntity?
 
-    @Delete
-    suspend fun deleteTarget(target: TargetEntity)
-
-    @Query("DELETE FROM TargetEntity WHERE id = 1")
-    suspend fun deleteTarget()
-
-
+    @Query("DELETE FROM Target")
+    suspend fun deleteAllTargets()
 }
