@@ -21,6 +21,9 @@ interface IncomeDao {
     suspend fun deleteAllIncomes()
 
 
+    @Query("DELETE FROM Income WHERE id = :id")
+    suspend fun deleteIncomeById(id: Int)
+
     @Query("UPDATE Income SET name = :name, amount = :amount, date = :date WHERE id = :id")
     suspend fun updateIncome(id: Int, name: String, amount: Double, date: String)
 

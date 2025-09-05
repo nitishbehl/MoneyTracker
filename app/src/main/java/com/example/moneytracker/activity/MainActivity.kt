@@ -14,6 +14,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,7 +43,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MoneyTrackerTheme {
                 var showHome by remember { mutableStateOf(false) }
-                var entries by remember { mutableStateOf(listOf<Task>()) }
+                val entries = remember { mutableStateListOf<Task>() }
                 var showBottomSheet by remember { mutableStateOf(false) }
                 var selectedEntryType by remember { mutableStateOf(EntryType.Expense) }
 
@@ -61,7 +62,7 @@ class MainActivity : ComponentActivity() {
                             if (showBottomSheet) {
                                 BottomsSheetUI(
                                     onAddTask = { task ->
-                                        entries = entries + task
+                                        entries.add(task)
                                         showBottomSheet = false
                                     },
                                     hideBottomSheet = { showBottomSheet = false }
@@ -73,6 +74,7 @@ class MainActivity : ComponentActivity() {
                                 onSave = { monthlyTarget, dailyTarget ->
                                     viewModel.saveTarget(monthlyTarget, dailyTarget)
                                     showHome = true
+
                                 })
                         }
                     }

@@ -105,6 +105,7 @@ class MainViewModel(val db: AppDatabase) : ViewModel() {
         }
     }
 
+
     fun deleteExpense(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             db.expenseDao().deleteExpenseById(id)

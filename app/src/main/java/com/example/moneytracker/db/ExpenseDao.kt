@@ -17,6 +17,9 @@ interface ExpenseDao {
     suspend fun getExpensesByDate(date: String): List<ExpenseEntity>
 
 
+    @Query("DELETE FROM Expense WHERE id = :id")
+    suspend fun deleteExpenseById(id: Int)
+
     @Query("DELETE FROM Expense")
     suspend fun deleteAllExpenses()
 

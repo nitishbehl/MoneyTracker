@@ -1,6 +1,9 @@
 package com.example.moneytracker.composable
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -17,13 +20,15 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.Icon
+import androidx.compose.ui.draw.clip
 
 @Composable
 fun CardScreen(
     title: String,
     dateLabel: String,
     amount: String,
-    isIncome: Boolean = true
+    isIncome: Boolean = true,
+    onDelete: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -39,6 +44,16 @@ fun CardScreen(
                 .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Box(
+                modifier = Modifier
+                    .size(22.dp)
+                    .clip(CircleShape)
+                    .border(1.dp, Color(0xFF1C1C1E), CircleShape)
+                    .clickable {
+                        onDelete()
+                    })
+
+            Spacer(modifier = Modifier.width(16.dp))
             Icon(
                 imageVector = Icons.Default.Work,
                 contentDescription = "Salary",
@@ -89,6 +104,7 @@ fun CardScreenPreview() {
         title = "Salary",
         dateLabel = "Aug 18, 2025",
         amount = "$1,000.00",
-        isIncome = true
+        isIncome = true,
+        onDelete = {}
     )
 }

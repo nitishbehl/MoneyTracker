@@ -21,13 +21,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePageScreen(
     monthly: Double,
-    entries: List<Task>,
+    entries: MutableList<Task>,
     daily: Double,
     onAddClick: () -> Unit = {},
 ) {
@@ -160,7 +161,10 @@ fun HomePageScreen(
                         title = income.title,
                         dateLabel = income.date,
                         amount = income.amount.toString(),
-                        isIncome = true
+                        isIncome = true,
+                        onDelete = {
+                            entries.remove(income)
+                        }
                     )
                     Spacer(Modifier.height(12.dp))
                 }
@@ -180,7 +184,10 @@ fun HomePageScreen(
                         title = expense.title,
                         dateLabel = expense.date,
                         amount = expense.amount.toString(),
-                        isIncome = false
+                        isIncome = false,
+                        onDelete = {
+                            entries.remove(expense)
+                        }
                     )
                     Spacer(Modifier.height(12.dp))
                 }
@@ -203,7 +210,7 @@ fun HomePageScreenPreview() {
     HomePageScreen(
         monthly = 3000.0,
         daily = 100.0,
-        entries = Entries
+        entries = Entries.toMutableList()
     )
 
 
