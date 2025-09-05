@@ -35,8 +35,8 @@ fun HomePageScreen(
     val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
     var selectedDay by remember { mutableStateOf("Mon") }
     val money: (Double) -> String = { String.format("%.2f", it) }
-    val incomeList = entries.filter { it.type == EntryType.Income }
-    val expenseList = entries.filter { it.type == EntryType.Expense }
+    val incomeList = entries.filter { it.type == EntryType.Income && it.day == selectedDay }
+    val expenseList = entries.filter { it.type == EntryType.Expense && it.day == selectedDay }
     val totalIncome = incomeList.sumOf { it.amount }
     val totalExpense = expenseList.sumOf { it.amount }
 
@@ -71,16 +71,19 @@ fun HomePageScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
+                val monthlyLeft = monthly - totalIncome
+                val dailyLeft = daily - totalIncome
+
                 val targets = listOf(
                     CardData(
                         "Monthly Target",
                         money(monthly),
-                        "Left ${money(monthly)}",
+                        "Left ${money(monthlyLeft)}",
                         Icons.Filled.CalendarMonth
                     ), CardData(
                         "Daily Target",
                         money(daily),
-                        "Left ${money(daily)}",
+                        "Left ${money(dailyLeft)}",
                         Icons.Filled.EventAvailable
                     )
                 )
@@ -192,10 +195,10 @@ fun HomePageScreen(
 @Composable
 fun HomePageScreenPreview() {
     val Entries = listOf(
-        Task("Salary", 2000.0, "2025-09-04", "Monthly salary", EntryType.Income),
-        Task("Freelance", 500.0, "2025-09-03", "Project payment", EntryType.Income),
-        Task("Food", 150.0, "2025-09-04", "Lunch", EntryType.Expense),
-        Task("Transport", 50.0, "2025-09-04", "Bus pass", EntryType.Expense)
+        Task("Salary", 2000.0, "2025-09-04", "Monthly salary", EntryType.Income, "Mon"),
+        Task("Freelance", 500.0, "2025-09-03", "Project payment", EntryType.Income, "Mon"),
+        Task("Food", 150.0, "2025-09-04", "Lunch", EntryType.Expense, "Wed"),
+        Task("Transport", 50.0, "2025-09-04", "Bus pass", EntryType.Expense, "Thu"),
     )
     HomePageScreen(
         monthly = 3000.0,

@@ -1,6 +1,5 @@
 package com.example.moneytracker.activity
 
-import android.R.attr.entries
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -43,14 +42,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             MoneyTrackerTheme {
                 var showHome by remember { mutableStateOf(false) }
+                var entries by remember { mutableStateOf(listOf<Task>()) }
+                var showBottomSheet by remember { mutableStateOf(false) }
+                var selectedEntryType by remember { mutableStateOf(EntryType.Expense) }
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        var showHome by remember { mutableStateOf(false) }
-                        var entries by remember { mutableStateOf(listOf<Task>()) }
-                        var showBottomSheet by remember { mutableStateOf(false) }
-
-                        var selectedEntryType by remember { mutableStateOf(EntryType.Expense) }
-
                         if (showHome) {
                             val monthly = viewModel.userFinancialState.value.monthlyTarget
                             val daily = viewModel.userFinancialState.value.dailyTarget
@@ -88,7 +85,8 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun BottomsSheetUI(
         onAddTask: (Task) -> Unit,
-        hideBottomSheet: () -> Unit) {
+        hideBottomSheet: () -> Unit
+    ) {
         val sheetState = rememberModalBottomSheetState()
         var selectedEntryType by remember { mutableStateOf(EntryType.Expense) }
         ModalBottomSheet(
@@ -103,7 +101,7 @@ class MainActivity : ComponentActivity() {
                     selectedOption = selectedEntryType,
                     onOptionSelected = { selectedEntryType = it },
                     onSave = { task ->
-                       onAddTask(task)
+                        onAddTask(task)
                         hideBottomSheet()
                     }
                 )

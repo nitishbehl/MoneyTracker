@@ -25,7 +25,8 @@ data class Task(
     val amount: Double,
     val date: String,
     val notes: String,
-    val type: EntryType
+    val type: EntryType,
+    val day: String
 )
 
 @Composable
@@ -38,6 +39,8 @@ fun AddEntryScreen(
     var date by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("") }
+    val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+    var selectedDay by remember { mutableStateOf("Mon") }
 
     Column(
         modifier = Modifier
@@ -134,6 +137,38 @@ fun AddEntryScreen(
         Spacer(Modifier.height(8.dp))
 
         Text(
+            "Day of Week",
+            modifier = Modifier.padding(bottom = 8.dp),
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            days.forEach { day ->
+                val isSelected = day == selectedDay
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(if (isSelected) Color.Black else Color.Gray)
+                        .clickable { selectedDay = day }
+                        .padding(horizontal = 8.dp, vertical = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = day,
+                        color = Color.White,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
+        Spacer(Modifier.height(16.dp))
+
+        Text(
             "Notes (optional)",
             modifier = Modifier.padding(bottom = 8.dp),
             fontWeight = FontWeight.SemiBold,
@@ -158,7 +193,16 @@ fun AddEntryScreen(
         IconButton(
             onClick = {
                 if (amount.isNotEmpty() && category.isNotEmpty()) {
-                    onSave(Task(category, amount.toDouble(), date, notes, selectedOption))
+                    onSave(
+                        Task(
+                            title = category,
+                            amount = amount.toDouble(),
+                            date = date,
+                            notes = notes,
+                            type = selectedOption,
+                            day = selectedDay
+                        )
+                    )
                 }
             },
             modifier = Modifier
