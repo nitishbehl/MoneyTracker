@@ -192,7 +192,7 @@ fun AddEntryScreen(
 
         IconButton(
             onClick = {
-                if (amount.isNotEmpty() && category.isNotEmpty()) {
+                if (amount.isNotEmpty() && category.isNotEmpty() && date.isNotEmpty()) {
                     onSave(
                         Task(
                             title = category,

@@ -45,7 +45,6 @@ class MainActivity : ComponentActivity() {
                 var showHome by remember { mutableStateOf(false) }
                 val entries = remember { mutableStateListOf<Task>() }
                 var showBottomSheet by remember { mutableStateOf(false) }
-                var selectedEntryType by remember { mutableStateOf(EntryType.Expense) }
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {

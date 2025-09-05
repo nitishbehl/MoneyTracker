@@ -31,11 +31,21 @@ class MainViewModel(val db: AppDatabase) : ViewModel() {
     init {
         viewModelScope.launch(Dispatchers.IO) {
             val target = db.targetDao().getTargetById(1)
+            val totalIncome = db.incomeDao().getTotalIncome()
+            val totalExpense = db.expenseDao().getTotalExpense()
+            val incomeList = db.incomeDao().getAllIncomes()
+            val expenseList = db.expenseDao().getAllExpenses()
+
             withContext(Dispatchers.Main) {
                 userFinancialState.value = userFinancialState.value.copy(
                     monthlyTarget = target?.monthlyTarget ?: 0.0,
-                    dailyTarget = target?.dailyTarget ?: 0.0
+                    dailyTarget = target?.dailyTarget ?: 0.0,
+                    totalIncome = totalIncome,
+                    totalExpense = totalExpense
                 )
+                incomeListState.value = incomeList
+                expenseListState.value = expenseList
+
             }
         }
     }
@@ -51,8 +61,10 @@ class MainViewModel(val db: AppDatabase) : ViewModel() {
                     category = category
                 )
             )
+            val expenseList = db.expenseDao().getAllExpenses()
             val totalExpense = db.expenseDao().getTotalExpense()
             withContext(Dispatchers.Main) {
+                expenseListState.value = expenseList
                 userFinancialState.value = userFinancialState.value.copy(
                     totalExpense = totalExpense
                 )
@@ -70,8 +82,10 @@ class MainViewModel(val db: AppDatabase) : ViewModel() {
                     category = category
                 )
             )
+            val incomeList = db.incomeDao().getAllIncomes()
             val totalIncome = db.incomeDao().getTotalIncome()
             withContext(Dispatchers.Main) {
+                incomeListState.value = incomeList
                 userFinancialState.value = userFinancialState.value.copy(
                     totalIncome = totalIncome
                 )
@@ -82,8 +96,10 @@ class MainViewModel(val db: AppDatabase) : ViewModel() {
     fun deleteExpense(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             db.expenseDao().deleteExpenseById(id)
+            val expenseList = db.expenseDao().getAllExpenses()
             val totalExpense = db.expenseDao().getTotalExpense()
             withContext(Dispatchers.Main) {
+                expenseListState.value = expenseList
                 userFinancialState.value = userFinancialState.value.copy(
                     totalExpense = totalExpense
                 )
@@ -95,32 +111,9 @@ class MainViewModel(val db: AppDatabase) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             db.incomeDao().deleteIncomeById(id)
             val totalIncome = db.incomeDao().getTotalIncome()
+            val incomeList = db.incomeDao().getAllIncomes()
             withContext(Dispatchers.Main) {
-                userFinancialState.value = userFinancialState.value.copy(
-                    totalIncome = totalIncome
-                )
-            }
-        }
-    }
-
-
-    fun updateExpense(id: Int, name: String, amount: Double, date: String, category: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            db.expenseDao().updateExpense(id, name, amount, date, category)
-            val totalExpense = db.expenseDao().getTotalExpense()
-            withContext(Dispatchers.Main) {
-                userFinancialState.value = userFinancialState.value.copy(
-                    totalExpense = totalExpense
-                )
-            }
-        }
-    }
-
-    fun updateIncome(id: Int, name: String, amount: Double, date: String, category: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            db.incomeDao().updateIncome(id, name, amount, date, category)
-            val totalIncome = db.incomeDao().getTotalIncome()
-            withContext(Dispatchers.Main) {
+                incomeListState.value = incomeList
                 userFinancialState.value = userFinancialState.value.copy(
                     totalIncome = totalIncome
                 )
@@ -133,19 +126,6 @@ class MainViewModel(val db: AppDatabase) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val target = TargetEntity(monthlyTarget = monthlyTarget, dailyTarget = dailyTarget)
             db.targetDao().insertTarget(target)
-            withContext(Dispatchers.Main) {
-                userFinancialState.value = userFinancialState.value.copy(
-                    monthlyTarget = monthlyTarget,
-                    dailyTarget = dailyTarget
-                )
-            }
-        }
-    }
-
-    fun updateTarget(monthlyTarget: Double, dailyTarget: Double) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val target = TargetEntity(monthlyTarget = monthlyTarget, dailyTarget = dailyTarget)
-            db.targetDao().updateTarget(target)
             withContext(Dispatchers.Main) {
                 userFinancialState.value = userFinancialState.value.copy(
                     monthlyTarget = monthlyTarget,
