@@ -24,11 +24,9 @@ data class UserFinancialState(
 
 class MainViewModel(val db: AppDatabase) : ViewModel() {
 
-    val userFinancialState = mutableStateOf(UserFinancialState())
-    val expenses: MutableState<List<ExpenseEntity>> = mutableStateOf(emptyList())
-    val totalExpense: MutableState<Double> = mutableStateOf(0.0)
-    val totalIncome: MutableState<Double> = mutableStateOf(0.0)
-
+    val userFinancialState: MutableState<UserFinancialState> = mutableStateOf(UserFinancialState())
+    val incomeListState: MutableState<List<IncomeEntity>> = mutableStateOf(emptyList())
+    val expenseListState: MutableState<List<ExpenseEntity>> = mutableStateOf(emptyList())
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -37,49 +35,6 @@ class MainViewModel(val db: AppDatabase) : ViewModel() {
                 userFinancialState.value = userFinancialState.value.copy(
                     monthlyTarget = target?.monthlyTarget ?: 0.0,
                     dailyTarget = target?.dailyTarget ?: 0.0
-                )
-            }
-        }
-    }
-
-    fun addIncome(name: String, amount: Double, date: String, category: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            db.incomeDao().insertIncome(
-                IncomeEntity(
-                    name = name,
-                    amount = amount,
-                    date = date,
-                    category = category
-                )
-            )
-            val totalIncome = db.incomeDao().getTotalIncome()
-            withContext(Dispatchers.Main) {
-                userFinancialState.value = userFinancialState.value.copy(
-                    totalIncome = totalIncome
-                )
-            }
-        }
-    }
-
-    fun deleteIncome(id: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            db.incomeDao().deleteIncomeById(id)
-            val totalIncome = db.incomeDao().getTotalIncome()
-            withContext(Dispatchers.Main) {
-                userFinancialState.value = userFinancialState.value.copy(
-                    totalIncome = totalIncome
-                )
-            }
-        }
-    }
-
-    fun updateIncome(id: Int, name: String, amount: Double, date: String, category: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            db.incomeDao().updateIncome(id, name, amount, date)
-            val totalIncome = db.incomeDao().getTotalIncome()
-            withContext(Dispatchers.Main) {
-                userFinancialState.value = userFinancialState.value.copy(
-                    totalIncome = totalIncome
                 )
             }
         }
@@ -105,6 +60,24 @@ class MainViewModel(val db: AppDatabase) : ViewModel() {
         }
     }
 
+    fun addIncome(name: String, amount: Double, date: String, category: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.incomeDao().insertIncome(
+                IncomeEntity(
+                    name = name,
+                    amount = amount,
+                    date = date,
+                    category = category
+                )
+            )
+            val totalIncome = db.incomeDao().getTotalIncome()
+            withContext(Dispatchers.Main) {
+                userFinancialState.value = userFinancialState.value.copy(
+                    totalIncome = totalIncome
+                )
+            }
+        }
+    }
 
     fun deleteExpense(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -118,6 +91,18 @@ class MainViewModel(val db: AppDatabase) : ViewModel() {
         }
     }
 
+    fun deleteIncome(id: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.incomeDao().deleteIncomeById(id)
+            val totalIncome = db.incomeDao().getTotalIncome()
+            withContext(Dispatchers.Main) {
+                userFinancialState.value = userFinancialState.value.copy(
+                    totalIncome = totalIncome
+                )
+            }
+        }
+    }
+
 
     fun updateExpense(id: Int, name: String, amount: Double, date: String, category: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -126,6 +111,18 @@ class MainViewModel(val db: AppDatabase) : ViewModel() {
             withContext(Dispatchers.Main) {
                 userFinancialState.value = userFinancialState.value.copy(
                     totalExpense = totalExpense
+                )
+            }
+        }
+    }
+
+    fun updateIncome(id: Int, name: String, amount: Double, date: String, category: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.incomeDao().updateIncome(id, name, amount, date, category)
+            val totalIncome = db.incomeDao().getTotalIncome()
+            withContext(Dispatchers.Main) {
+                userFinancialState.value = userFinancialState.value.copy(
+                    totalIncome = totalIncome
                 )
             }
         }
