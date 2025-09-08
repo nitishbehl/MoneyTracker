@@ -25,6 +25,10 @@ data class UserFinancialState(
 class MainViewModel(val db: AppDatabase) : ViewModel() {
 
     var showHome =  mutableStateOf(false)
+    val selectedDayState: MutableState<String> = mutableStateOf("Mon")
+    fun setSelectedDay(day: String) {
+        selectedDayState.value = day
+    }
 
     val userFinancialState: MutableState<UserFinancialState> = mutableStateOf(UserFinancialState())
     val incomeListState: MutableState<List<IncomeEntity>> = mutableStateOf(emptyList())
@@ -63,7 +67,8 @@ class MainViewModel(val db: AppDatabase) : ViewModel() {
                     name = name,
                     amount = amount,
                     date = date,
-                    category = category
+                    category = category,
+                    day = selectedDayState.value
                 )
             )
             val expenseList = db.expenseDao().getAllExpenses()
@@ -84,7 +89,8 @@ class MainViewModel(val db: AppDatabase) : ViewModel() {
                     name = name,
                     amount = amount,
                     date = date,
-                    category = category
+                    category = category,
+                    day = selectedDayState.value
                 )
             )
             val incomeList = db.incomeDao().getAllIncomes()

@@ -32,16 +32,20 @@ fun HomePageScreen(
     daily: Double,
     incomeList: List<IncomeEntity>,
     expenseList: List<ExpenseEntity>,
+    selectedDay: String,
+    onDaySelected: (String) -> Unit,
     onDeleteIncome: (Int) -> Unit,
     onDeleteExpense: (Int) -> Unit,
     onAddClick: () -> Unit = {}
+
 ) {
 
     val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-    var selectedDay by remember { mutableStateOf("Mon") }
     val money: (Double) -> String = { String.format("%.2f", it) }
     val totalIncome = incomeList.sumOf { it.amount }
     val totalExpense = expenseList.sumOf { it.amount }
+    val filteredIncome = incomeList.filter { it.day == selectedDay }
+    val filteredExpense = expenseList.filter { it.day == selectedDay }
 
     Scaffold(
         containerColor = Color(0xFFF7F8FB), floatingActionButton = {
@@ -135,7 +139,7 @@ fun HomePageScreen(
                             .weight(1f)
                             .clip(RoundedCornerShape(20.dp))
                             .background(if (isSelected) Color(0xFF5B47FF) else Color(0xFFF3F5F9))
-                            .clickable { selectedDay = day }
+                            .clickable { onDaySelected(day) }
                             .padding(vertical = 10.dp),
                         contentAlignment = Alignment.Center) {
                         Text(
@@ -157,8 +161,8 @@ fun HomePageScreen(
                 color = Color(0xFF0F172A)
             )
             Spacer(Modifier.height(12.dp))
-            if (incomeList.isNotEmpty()) {
-                incomeList.forEach { income ->
+            if (filteredIncome.isNotEmpty()) {
+                filteredIncome.forEach { income ->
                     CardScreen(
                         title = income.name,
                         dateLabel = income.date,
@@ -181,8 +185,8 @@ fun HomePageScreen(
                 color = Color(0xFF0F172A)
             )
             Spacer(Modifier.height(12.dp))
-            if (expenseList.isNotEmpty()) {
-                expenseList.forEach { expense ->
+            if (filteredExpense.isNotEmpty()) {
+                filteredExpense.forEach { expense ->
                     CardScreen(
                         title = expense.name,
                         dateLabel = expense.date,
@@ -211,14 +215,17 @@ fun HomePageScreenPreview() {
             name = "Salary",
             amount = 2000.0,
             date = "2025-09-04",
-            category = "Job"
+            category = "Job",
+            day = "Mon"
+
         ),
         IncomeEntity(
             id = 2,
             name = "Freelance",
             amount = 500.0,
             date = "2025-09-03",
-            category = "Project"
+            category = "Project",
+            day = "Tue"
         )
     )
     val sampleExpense = listOf(
@@ -227,14 +234,16 @@ fun HomePageScreenPreview() {
             name = "Food",
             amount = 150.0,
             date = "2025-09-04",
-            category = "Lunch"
+            category = "Lunch",
+            day = "Mon"
         ),
         ExpenseEntity(
             id = 2,
             name = "Transport",
             amount = 50.0,
             date = "2025-09-04",
-            category = "Bus"
+            category = "Bus",
+            day = "Mon"
         )
     )
 
@@ -244,6 +253,8 @@ fun HomePageScreenPreview() {
         incomeList = sampleIncome,
         expenseList = sampleExpense,
         onDeleteIncome = {},
-        onDeleteExpense = {}
+        onDeleteExpense = {},
+        selectedDay = "Mon",
+        onDaySelected = {}
     )
 }

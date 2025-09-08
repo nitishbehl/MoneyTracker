@@ -15,7 +15,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,43 +36,42 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         val db = Room.databaseBuilder(
             applicationContext, AppDatabase::class.java, "money-tracker.db"
-        ).fallbackToDestructiveMigration().build()
+        ).fallbackToDestructiveMigration()
+            .build()
 
         val viewModel = MainViewModel(db)
 
         setContent {
             MoneyTrackerTheme {
                 var showBottomSheet by remember { mutableStateOf(false) }
-                var showHome by remember { viewModel.showHome }
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        if (showHome) {
-                            val monthly = viewModel.userFinancialState.value.monthlyTarget
-                            val daily = viewModel.userFinancialState.value.dailyTarget
-
+                        if (viewModel.showHome.value) {
                             HomePageScreen(
-                                monthly = monthly,
-                                daily = daily,
+                                monthly = viewModel.userFinancialState.value.monthlyTarget,
+                                daily = viewModel.userFinancialState.value.dailyTarget,
                                 incomeList = viewModel.incomeListState.value,
                                 expenseList = viewModel.expenseListState.value,
+                                selectedDay = viewModel.selectedDayState.value,
+                                onDaySelected = { viewModel.setSelectedDay(it) },
                                 onDeleteIncome = { viewModel.deleteIncome(it) },
                                 onDeleteExpense = { viewModel.deleteExpense(it) },
                                 onAddClick = { showBottomSheet = true }
-
                             )
+
                             if (showBottomSheet) {
                                 BottomsSheetUI(
                                     onAddTask = { task ->
                                         if (task.type == EntryType.Expense) {
-                                            viewModel.addIncome(
+                                            viewModel.addExpense(
                                                 task.title,
                                                 task.amount,
                                                 task.date,
                                                 task.notes
                                             )
                                         } else {
-                                            viewModel.addExpense(
+                                            viewModel.addIncome(
                                                 task.title,
                                                 task.amount,
                                                 task.date,
@@ -82,15 +80,17 @@ class MainActivity : ComponentActivity() {
                                         }
                                         showBottomSheet = false
                                     },
+                                    selectedDay = viewModel.selectedDayState.value,
+                                    onDaySelected = { viewModel.setSelectedDay(it) },
                                     hideBottomSheet = { showBottomSheet = false }
                                 )
                             }
                         } else {
                             SetTargetScreen(
-                                onSkip = { showHome = true },
+                                onSkip = { viewModel.showHome.value = true },
                                 onSave = { monthlyTarget, dailyTarget ->
                                     viewModel.saveTarget(monthlyTarget, dailyTarget)
-                                    showHome = true
+                                    viewModel.showHome.value = true
 
                                 })
                         }
@@ -103,6 +103,8 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun BottomsSheetUI(
+        selectedDay: String,
+        onDaySelected: (String) -> Unit,
         onAddTask: (Task) -> Unit,
         hideBottomSheet: () -> Unit
     ) {
@@ -125,10 +127,9 @@ class MainActivity : ComponentActivity() {
                 AddEntryScreen(
                     selectedOption = selectedEntryType,
                     onOptionSelected = { selectedEntryType = it },
-                    onSave = { task ->
-                        onAddTask(task)
-                        hideBottomSheet()
-                    }
+                    selectedDay = selectedDay,
+                    onDaySelected = onDaySelected,
+                    onSave = onAddTask
                 )
             }
         }

@@ -43,6 +43,8 @@ data class Task(
 fun AddEntryScreen(
     selectedOption: EntryType,
     onOptionSelected: (EntryType) -> Unit,
+    selectedDay: String,
+    onDaySelected: (String) -> Unit,
     onSave: (Task) -> Unit
 ) {
     var amount by remember { mutableStateOf("") }
@@ -50,13 +52,9 @@ fun AddEntryScreen(
     var notes by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("") }
     val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-    var selectedDay by remember { mutableStateOf("Mon") }
     var showDatePicker by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState()
-    val selectedDate = datePickerState.selectedDateMillis?.let {
-        convertMillisToDate(it)
-    } ?: ""
 
+    val datePickerState = rememberDatePickerState()
 
     Box(){
         Column(
@@ -176,7 +174,7 @@ fun AddEntryScreen(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
                             .background(if (isSelected) Color.Black else Color.Gray)
-                            .clickable { selectedDay = day }
+                            .clickable { onDaySelected(day) }
                             .padding(horizontal = 8.dp, vertical = 6.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -266,6 +264,7 @@ fun AddEntryScreen(
                         onDateSelected = { selectedDate ->
                             date = selectedDate?.let { convertMillisToDate(it) } ?: ""
                         },
+                        datePickerState = datePickerState,
                         onDismiss = { showDatePicker = false }
                     )
                 }
@@ -278,6 +277,7 @@ fun AddEntryScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerModal(
+    datePickerState: DatePickerState,
     onDateSelected: (Long?) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -343,9 +343,9 @@ fun AddEntryPreview() {
     AddEntryScreen(
         selectedOption = EntryType.Expense,
         onOptionSelected = {},
-        onSave = { task ->
-
-        }
+        selectedDay = "Mon",
+        onDaySelected = {},
+        onSave = {}
     )
 
 
