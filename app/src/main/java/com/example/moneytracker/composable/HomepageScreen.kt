@@ -21,22 +21,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.moneytracker.db.ExpenseEntity
+import com.example.moneytracker.db.IncomeEntity
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePageScreen(
     monthly: Double,
-    entries: MutableList<Task>,
     daily: Double,
-    onAddClick: () -> Unit = {},
+    incomeList: List<IncomeEntity>,
+    expenseList: List<ExpenseEntity>,
+    onDeleteIncome: (Int) -> Unit,
+    onDeleteExpense: (Int) -> Unit,
+    onAddClick: () -> Unit = {}
 ) {
 
     val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
     var selectedDay by remember { mutableStateOf("Mon") }
     val money: (Double) -> String = { String.format("%.2f", it) }
-    val incomeList = entries.filter { it.type == EntryType.Income && it.day == selectedDay }
-    val expenseList = entries.filter { it.type == EntryType.Expense && it.day == selectedDay }
     val totalIncome = incomeList.sumOf { it.amount }
     val totalExpense = expenseList.sumOf { it.amount }
 
@@ -45,7 +48,7 @@ fun HomePageScreen(
             ExtendedFloatingActionButton(
                 text = { Text("Add Task") },
                 icon = { Icon(Icons.Filled.Add, contentDescription = null) },
-                onClick = { onAddClick() })
+                onClick = { onAddClick() } )
         }) { innerPadding ->
         Column(
             modifier = Modifier
@@ -157,12 +160,13 @@ fun HomePageScreen(
             if (incomeList.isNotEmpty()) {
                 incomeList.forEach { income ->
                     CardScreen(
-                        title = income.title,
+                        title = income.name,
                         dateLabel = income.date,
                         amount = income.amount.toString(),
                         isIncome = true,
                         onDelete = {
-                            entries.remove(income)
+                            onDeleteIncome(income.id)
+
                         }
                     )
                     Spacer(Modifier.height(12.dp))
@@ -180,12 +184,13 @@ fun HomePageScreen(
             if (expenseList.isNotEmpty()) {
                 expenseList.forEach { expense ->
                     CardScreen(
-                        title = expense.title,
+                        title = expense.name,
                         dateLabel = expense.date,
                         amount = expense.amount.toString(),
                         isIncome = false,
                         onDelete = {
-                            entries.remove(expense)
+                            onDeleteExpense(expense.id)
+
                         }
                     )
                     Spacer(Modifier.height(12.dp))
@@ -200,15 +205,45 @@ fun HomePageScreen(
 @Preview
 @Composable
 fun HomePageScreenPreview() {
-    val Entries = listOf(
-        Task("Salary", 2000.0, "2025-09-04", "Monthly salary", EntryType.Income, "Mon"),
-        Task("Freelance", 500.0, "2025-09-03", "Project payment", EntryType.Income, "Mon"),
-        Task("Food", 150.0, "2025-09-04", "Lunch", EntryType.Expense, "Wed"),
-        Task("Transport", 50.0, "2025-09-04", "Bus pass", EntryType.Expense, "Thu"),
+    val sampleIncome = listOf(
+        IncomeEntity(
+            id = 1,
+            name = "Salary",
+            amount = 2000.0,
+            date = "2025-09-04",
+            category = "Job"
+        ),
+        IncomeEntity(
+            id = 2,
+            name = "Freelance",
+            amount = 500.0,
+            date = "2025-09-03",
+            category = "Project"
+        )
     )
+    val sampleExpense = listOf(
+        ExpenseEntity(
+            id = 1,
+            name = "Food",
+            amount = 150.0,
+            date = "2025-09-04",
+            category = "Lunch"
+        ),
+        ExpenseEntity(
+            id = 2,
+            name = "Transport",
+            amount = 50.0,
+            date = "2025-09-04",
+            category = "Bus"
+        )
+    )
+
     HomePageScreen(
         monthly = 3000.0,
         daily = 100.0,
-        entries = Entries.toMutableList()
+        incomeList = sampleIncome,
+        expenseList = sampleExpense,
+        onDeleteIncome = {},
+        onDeleteExpense = {}
     )
 }

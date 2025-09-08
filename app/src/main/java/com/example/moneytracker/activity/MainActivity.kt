@@ -43,7 +43,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MoneyTrackerTheme {
-                val entries = remember { mutableStateListOf<Task>() }
                 var showBottomSheet by remember { mutableStateOf(false) }
                 var showHome by remember { viewModel.showHome }
 
@@ -55,14 +54,32 @@ class MainActivity : ComponentActivity() {
 
                             HomePageScreen(
                                 monthly = monthly,
-                                entries = entries,
                                 daily = daily,
+                                incomeList = viewModel.incomeListState.value,
+                                expenseList = viewModel.expenseListState.value,
+                                onDeleteIncome = { viewModel.deleteIncome(it) },
+                                onDeleteExpense = { viewModel.deleteExpense(it) },
                                 onAddClick = { showBottomSheet = true }
+
                             )
                             if (showBottomSheet) {
                                 BottomsSheetUI(
                                     onAddTask = { task ->
-                                        entries.add(task)
+                                        if (task.type == EntryType.Expense) {
+                                            viewModel.addIncome(
+                                                task.title,
+                                                task.amount,
+                                                task.date,
+                                                task.notes
+                                            )
+                                        } else {
+                                            viewModel.addExpense(
+                                                task.title,
+                                                task.amount,
+                                                task.date,
+                                                task.notes
+                                            )
+                                        }
                                         showBottomSheet = false
                                     },
                                     hideBottomSheet = { showBottomSheet = false }
