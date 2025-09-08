@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -31,7 +32,6 @@ import com.example.moneytracker.ui.theme.MoneyTrackerTheme
 import com.example.moneytracker.viewModel.MainViewModel
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -40,11 +40,12 @@ class MainActivity : ComponentActivity() {
         ).fallbackToDestructiveMigration().build()
 
         val viewModel = MainViewModel(db)
+
         setContent {
             MoneyTrackerTheme {
-                var showHome by remember { mutableStateOf(false) }
                 val entries = remember { mutableStateListOf<Task>() }
                 var showBottomSheet by remember { mutableStateOf(false) }
+                var showHome by remember { viewModel.showHome }
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
@@ -88,8 +89,14 @@ class MainActivity : ComponentActivity() {
         onAddTask: (Task) -> Unit,
         hideBottomSheet: () -> Unit
     ) {
-        val sheetState = rememberModalBottomSheetState()
+        val sheetState = rememberModalBottomSheetState(
+            skipPartiallyExpanded = true
+        )
         var selectedEntryType by remember { mutableStateOf(EntryType.Expense) }
+
+        LaunchedEffect(Unit) {
+            sheetState.show()
+        }
         ModalBottomSheet(
             onDismissRequest = { hideBottomSheet() },
             sheetState = sheetState,

@@ -24,6 +24,8 @@ data class UserFinancialState(
 
 class MainViewModel(val db: AppDatabase) : ViewModel() {
 
+    var showHome =  mutableStateOf(false)
+
     val userFinancialState: MutableState<UserFinancialState> = mutableStateOf(UserFinancialState())
     val incomeListState: MutableState<List<IncomeEntity>> = mutableStateOf(emptyList())
     val expenseListState: MutableState<List<ExpenseEntity>> = mutableStateOf(emptyList())
@@ -35,6 +37,9 @@ class MainViewModel(val db: AppDatabase) : ViewModel() {
             val totalExpense = db.expenseDao().getTotalExpense()
             val incomeList = db.incomeDao().getAllIncomes()
             val expenseList = db.expenseDao().getAllExpenses()
+
+            showHome.value =
+                (target != null && target.monthlyTarget > 0 && target.dailyTarget > 0)
 
             withContext(Dispatchers.Main) {
                 userFinancialState.value = userFinancialState.value.copy(
