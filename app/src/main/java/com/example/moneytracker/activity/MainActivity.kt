@@ -57,7 +57,8 @@ class MainActivity : ComponentActivity() {
                                 onDaySelected = { viewModel.setSelectedDay(it) },
                                 onDeleteIncome = { viewModel.deleteIncome(it) },
                                 onDeleteExpense = { viewModel.deleteExpense(it) },
-                                onAddClick = { showBottomSheet = true }
+                                onAddClick = { showBottomSheet = true },
+                                onEditClick = { viewModel.showHome.value = false }
                             )
 
                             if (showBottomSheet) {

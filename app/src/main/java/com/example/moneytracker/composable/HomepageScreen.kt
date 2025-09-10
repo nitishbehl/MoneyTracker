@@ -36,7 +36,8 @@ fun HomePageScreen(
     onDaySelected: (String) -> Unit,
     onDeleteIncome: (Int) -> Unit,
     onDeleteExpense: (Int) -> Unit,
-    onAddClick: () -> Unit = {}
+    onAddClick: () -> Unit = {},
+    onEditClick: () -> Unit = {}
 
 ) {
 
@@ -46,6 +47,7 @@ fun HomePageScreen(
     val totalExpense = expenseList.sumOf { it.amount }
     val filteredIncome = incomeList.filter { it.day == selectedDay }
     val filteredExpense = expenseList.filter { it.day == selectedDay }
+
 
     Scaffold(
         containerColor = Color(0xFFF7F8FB), floatingActionButton = {
@@ -86,12 +88,15 @@ fun HomePageScreen(
                         "Monthly Target",
                         money(monthly),
                         "Left ${money(monthlyLeft)}",
-                        Icons.Filled.CalendarMonth
+                        Icons.Filled.CalendarMonth,
+                        onEditClick = onEditClick
+
                     ), CardData(
                         "Daily Target",
                         money(daily),
                         "Left ${money(dailyLeft)}",
-                        Icons.Filled.EventAvailable
+                        Icons.Filled.EventAvailable,
+                        onEditClick = onEditClick
                     )
                 )
                 targets.forEach { item ->

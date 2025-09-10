@@ -1,8 +1,10 @@
 package com.example.moneytracker.composable
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -10,10 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Preview
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,7 +34,8 @@ data class CardData(
     val title: String,
     val amount: String,
     val leftText: String,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val onEditClick: (() -> Unit)? = null
 )
 
 @Composable
@@ -44,14 +49,16 @@ fun CardUi(
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFFFF)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Box(
+        Column(
             modifier = Modifier
                 .padding(16.dp)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+            // Top row: Icon + Edit button
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Box(
                     modifier = Modifier
@@ -66,7 +73,24 @@ fun CardUi(
                         tint = Color(0xFF0F172A)
                     )
                 }
-                Spacer(Modifier.height(8.dp))
+
+                if (data.onEditClick != null) {
+                    IconButton(onClick = { data.onEditClick.invoke() }) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit target",
+                            tint = Color(0xFF5B47FF)
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            // Text content
+            Column(
+                horizontalAlignment = Alignment.Start
+            ) {
                 Text(
                     data.title,
                     color = Color(0xFF334155),
@@ -99,7 +123,8 @@ fun CardUiPreview() {
             "Monthly Target",
             "$8,000.00",
             "Left $910.72",
-            Icons.Filled.Preview
+            Icons.Filled.Preview,
+            onEditClick = {}
         )
     )
 }
